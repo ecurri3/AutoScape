@@ -1,28 +1,32 @@
 package com.evan.autoscape.autoscape;
 
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.view.Window;
+import android.view.WindowManager;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    public static final String MyPREFERENCES = "MyPrefs";
-    SharedPreferences sharedpreferences;
+    public static final String MYPREFERENCES = "MyPrefs";
+    SharedPreferences sharedPrefs;
     long Time;
     long endTime;
     Task currTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedPrefs = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
         currTask = new Task(30, this.getApplicationContext());
     }
 
@@ -51,6 +55,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onResume(){
+        super.onResume();
         //Updates current task progress
         currTask.updateTask();
     }

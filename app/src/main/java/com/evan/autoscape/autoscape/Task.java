@@ -36,13 +36,20 @@ public class Task {
         this.lastChecked = timeStarted;
         this.endTime = timeStarted + minDuration * 60 * 1000;
         context = c;
+
+        sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putLong("endTime_currTask", endTime);
+        editor.commit();
     }
 
     /*
     Updates task progress based on last time you checked
      */
     public void updateTask(){
-        Toast.makeText(context, "called updateTask()", Toast.LENGTH_SHORT).show();
+        long endTime = sharedpreferences.getLong("endTime_currTask", 1000);
+        String endTime_S = "" + endTime;
+        Toast.makeText(context, endTime_S, Toast.LENGTH_SHORT).show();
         long currTime = System.currentTimeMillis();
         long timeDiff = currTime - this.lastChecked;
         if(timeDiff >= rewardTick()){

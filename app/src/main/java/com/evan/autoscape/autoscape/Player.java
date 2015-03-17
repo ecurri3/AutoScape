@@ -12,6 +12,33 @@ public class Player {
     private Item[] bank;
     private int[] skillEXP;
 
+    public static final int STAT_ATTACK = 0;
+    public static final int STAT_STRENGTH = 1;
+    public static final int STAT_DEFENCE = 2;
+    public static final int STAT_RANGED = 3;
+    public static final int STAT_PRAYER = 4;
+    public static final int STAT_MAGIC = 5;
+    public static final int STAT_RUNECRAFTING = 6;
+    public static final int STAT_CONSTRUCTION = 7;
+    public static final int STAT_DUNGEONEERING = 8;
+    public static final int STAT_HITPOINTS = 9;
+    public static final int STAT_AGILITY = 10;
+    public static final int STAT_HERBLORE = 11;
+    public static final int STAT_THEIVING = 12;
+    public static final int STAT_CRAFTING = 13;
+    public static final int STAT_FLETCHING = 14;
+    public static final int STAT_SLAYER = 15;
+    public static final int STAT_HUNTER = 16;
+    public static final int STAT_DIVINATION = 17;
+    public static final int STAT_MINING = 18;
+    public static final int STAT_SMITHING = 19;
+    public static final int STAT_FISHING = 20;
+    public static final int STAT_COOKING = 21;
+    public static final int STAT_FIREMAKING = 22;
+    public static final int STAT_WOODCUTTING = 23;
+    public static final int STAT_FARMING = 24;
+    public static final int STAT_SUMMONING = 25;
+
     public Player(){
 
     }
@@ -21,32 +48,9 @@ public class Player {
         return skillEXP[statID];
     }
 
-    final int STAT_ATTACK = 0;
-    final int STAT_STRENGTH = 1;
-    final int STAT_DEFENCE = 2;
-    final int STAT_RANGED = 3;
-    final int STAT_PRAYER = 4;
-    final int STAT_MAGIC = 5;
-    final int STAT_RUNECRAFTING = 6;
-    final int STAT_CONSTRUCTION = 7;
-    final int STAT_DUNGEONEERING = 8;
-    final int STAT_HITPOINTS = 9;
-    final int STAT_AGILITY = 10;
-    final int STAT_HERBLORE = 11;
-    final int STAT_THEIVING = 12;
-    final int STAT_CRAFTING = 13;
-    final int STAT_FLETCHING = 14;
-    final int STAT_SLAYER = 15;
-    final int STAT_HUNTER = 16;
-    final int STAT_DIVINATION = 17;
-    final int STAT_MINING = 18;
-    final int STAT_SMITHING = 19;
-    final int STAT_FISHING = 20;
-    final int STAT_COOKING = 21;
-    final int STAT_FIREMAKING = 22;
-    final int STAT_WOODCUTTING = 23;
-    final int STAT_FARMING = 24;
-    final int STAT_SUMMONING = 25;
+    public void gainExp(int skill, int value) {
+        skillEXP[skill] += value;
+    }
 
 
 }

@@ -14,8 +14,9 @@ public class Task {
 
     private int requirements;
     private int cost;
-    private Item[] rewards;
-    private int expReward;
+    private Item[] itemRewards;
+    private int expRewardSkills[];
+    private int expRewardValues[];
 
     private long Duration;//in millis
     private long timeStarted;//in millis
@@ -40,7 +41,11 @@ public class Task {
         sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putLong("endTime_currTask", endTime);
-        editor.commit();
+        editor.apply();
+
+        //example exp rewards for combat task: Str and Prayer
+        expRewardSkills = new int[] {Player.STAT_ATTACK, Player.STAT_PRAYER};
+        expRewardValues = new int[] {200, 300};
     }
 
     /*
@@ -51,12 +56,14 @@ public class Task {
         String endTime_S = "" + endTime;
         Toast.makeText(context, endTime_S, Toast.LENGTH_SHORT).show();
         long currTime = System.currentTimeMillis();
-        long timeDiff = currTime - this.lastChecked;
-        if(timeDiff >= rewardTick()){
-            int numRewards = (int)(timeDiff / rewardTick());
-            this.lastChecked = currTime;
-            giveRewards(numRewards, expReward);
+        long rewardTick = rewardTick();
+        long nextRewardTime = lastChecked + rewardTick;
+        while(currTime >= nextRewardTime){
+            giveReward();
+            lastChecked = nextRewardTime;
+            nextRewardTime += rewardTick;
         }
+
     }
 
     /*
@@ -69,12 +76,10 @@ public class Task {
     /*
     Gives rewards to the player
      */
-    public void giveRewards(int numRewards, int expReward){
+    public void giveReward(){
 
-        for(int i = 0; i < numRewards; i++){
             rewardTable();
-            giveEXP(expReward);
-        }
+            giveEXP();
     }
 
     public void rewardTable(){
@@ -90,8 +95,10 @@ public class Task {
     /*
     Grants EXP to player
      */
-    public void giveEXP(int expReward){
+    public void giveEXP(){
+        for (int i = 0; i < expRewardSkills.length; i++) {
 
+        }
     }
 
     /*

@@ -3,6 +3,7 @@ package com.evan.autoscape.autoscape;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -21,6 +22,8 @@ public class Task {
     private long lastChecked;//in millis
     private long endTime;//in millis
 
+    private Context context;
+
     public static final String MyPREFERENCES = "MyPrefs";
     SharedPreferences sharedpreferences;
 
@@ -28,18 +31,18 @@ public class Task {
 
     }
 
-    public Task(int min, Context c){
-
+    public Task(int minDuration, Context c){
         this.timeStarted = System.currentTimeMillis();
-        this.endTime = timeStarted + min * 60 * 100;
-        sharedpreferences = c.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        this.lastChecked = timeStarted;
+        this.endTime = timeStarted + minDuration * 60 * 1000;
+        context = c;
     }
 
     /*
     Updates task progress based on last time you checked
      */
     public void updateTask(){
-
+        Toast.makeText(context, "called updateTask()", Toast.LENGTH_SHORT).show();
         long currTime = System.currentTimeMillis();
         long timeDiff = currTime - this.lastChecked;
         if(timeDiff >= rewardTick()){
@@ -53,7 +56,7 @@ public class Task {
     Calculates the time for player to receive a reward from the current task
      */
     public long rewardTick(){
-        return 0;
+        return 1000;
     }
 
     /*

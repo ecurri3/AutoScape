@@ -54,6 +54,7 @@ public class Task {
     Calculates the time for player to receive a reward from the current task
      */
     public long rewardTick(){
+
         return 0;
     }
 

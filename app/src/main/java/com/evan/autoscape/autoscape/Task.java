@@ -32,6 +32,7 @@ public class Task {
 
         this.timeStarted = System.currentTimeMillis();
         this.endTime = timeStarted + min * 60 * 100;
+        //I dont know what this does
         sharedpreferences = c.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
     }
 

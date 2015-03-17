@@ -1,17 +1,29 @@
 package com.evan.autoscape.autoscape;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    public static final String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedpreferences;
+    long Time;
+    long endTime;
+    Task currTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        currTask = new Task(30, this.getApplicationContext());
     }
 
 
@@ -35,5 +47,11 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume(){
+        //Updates current task progress
+        currTask.updateTask();
     }
 }

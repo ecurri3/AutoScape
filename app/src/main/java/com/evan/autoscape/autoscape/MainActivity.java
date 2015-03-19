@@ -3,26 +3,51 @@ package com.evan.autoscape.autoscape;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    public static final String MYPREFERENCES = "MyPrefs";
-    SharedPreferences sharedPrefs;
-    long Time;
-    long endTime;
-    Task currTask;
+    public static final String MY_PREFS = "MyPrefs"; //Name of sharedPrefs file
+    SharedPreferences sharedPrefs; //sharedPrefs for storing game data
+    Task currTask; //The current task in progress
+
+
+    LinearLayout linearLayoutEvents;
+    ScrollView scrollViewEvents;
+
+
+
+    final int UPDATE_FREQUENCY = 2000; //Number of milliseconds between updates
+    final Handler handler = new Handler(); //Handler allows us to call runnableUpdate repeatedly
+    Runnable runnableUpdate = new Runnable() { //Runnable object for calling update
+        public void run() {
+            update(); //Call the update method
+            handler.postDelayed(this, UPDATE_FREQUENCY); //Repeat periodically
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sharedPrefs = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
-        currTask = new Task(30, this.getApplicationContext());
+        //Get sharedPrefs
+        sharedPrefs = getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
+        //TODO: Initialize GameData by reading sharedPrefs
+        currTask = new Task(30, this);
+
+        linearLayoutEvents = (LinearLayout)findViewById(R.id.LinearLayoutEvents);
+        scrollViewEvents = (ScrollView) findViewById(R.id.scrollViewEvents);
+
     }
 
 
@@ -50,8 +75,40 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onResume(){
+        //Called whenever this activity returns to foreground
         super.onResume();
-        //Updates current task progress
-        currTask.updateTask();
+        //Call update immediately
+        update();
+        //Restart runnableUpdate using Handler
+        handler.postDelayed(runnableUpdate, UPDATE_FREQUENCY);
+    }
+
+    public void onPause(){
+        //Called whenever this activity is in the background
+        super.onPause();
+        //Temporarily remove runnableUpdate calls from Handler
+        handler.removeCallbacks(runnableUpdate);
+    }
+
+    public void update() {
+        //Testing adding an event
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        TextView tv = (TextView)layoutInflater.inflate(R.layout.text_view_event_item, null); //inflate textview
+        tv.setText("Selling lobbies 200 ea");
+        linearLayoutEvents.addView(tv); //add to list of events
+        scrollViewEvents.fullScroll(ScrollView.FOCUS_DOWN); //scroll to bottom
+
+
+
+
+        //Currently have a task in progress
+        if (currTask != null) {
+            //Updates current task progress
+            currTask.updateTask();
+        }
+        //No task in progress
+        else {
+
+        }
     }
 }

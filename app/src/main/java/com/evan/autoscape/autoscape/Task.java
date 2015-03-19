@@ -2,8 +2,6 @@ package com.evan.autoscape.autoscape;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.widget.Toast;
 
 import java.util.Random;
 
@@ -15,8 +13,9 @@ public class Task {
     private int requirements;
     private int cost;
     private Item[] itemRewards;
-    private int expRewardSkills[];
-    private int expRewardValues[];
+
+    private int expRewardSkills[]; //Skills for which exp is earned
+    private int expRewardValues[]; //Corresponding exp amount for each skill
 
     private long Duration;//in millis
     private long timeStarted;//in millis
@@ -25,7 +24,7 @@ public class Task {
 
     private Context context;
 
-    public static final String MyPREFERENCES = "MyPrefs";
+    public static final String MY_PREFS = "MyPrefs";
     SharedPreferences sharedpreferences;
 
     public Task(){
@@ -38,7 +37,7 @@ public class Task {
         this.endTime = timeStarted + minDuration * 60 * 1000;
         context = c;
 
-        sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = context.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putLong("endTime_currTask", endTime);
         editor.apply();
@@ -53,8 +52,6 @@ public class Task {
      */
     public void updateTask(){
         long endTime = sharedpreferences.getLong("endTime_currTask", 1000);
-        String endTime_S = "" + endTime;
-        Toast.makeText(context, endTime_S, Toast.LENGTH_SHORT).show();
         long currTime = System.currentTimeMillis();
         long rewardTick = rewardTick();
         long nextRewardTime = lastChecked + rewardTick;
@@ -105,10 +102,7 @@ public class Task {
     Determines if roll was in a certain range
      */
     public boolean isBetween(int roll, int min, int max){
-        if(roll >= min && roll <= max)
-            return true;
-        else
-            return false;
+        return (roll >= min && roll <= max);
     }
 
     /*

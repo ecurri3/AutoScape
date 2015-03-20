@@ -51,8 +51,8 @@ public class Task {
         expRewardValues = new int[] {200, 300};
     }
 
-    /*
-    Updates task progress based on last time you checked
+    /**
+     * Updates task progress based on last time you checked
      */
     public void updateTask(){
         long currTime = System.currentTimeMillis();

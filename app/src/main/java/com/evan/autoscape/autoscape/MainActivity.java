@@ -13,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -93,25 +95,31 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void update() {
-        //Testing adding an event
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        TextView tv = (TextView)layoutInflater.inflate(R.layout.text_view_event_item, null); //inflate textview
-        tv.setText("Selling lobbies 200 ea");
-        linearLayoutEvents.addView(tv); //add to list of events
-        scrollViewEvents.fullScroll(ScrollView.FOCUS_DOWN); //scroll to bottom
-
-
-
         //Currently have a task in progress
-        if (currTask != null) {
+        if (currTask != null && !currTask.isDone) {
             //Updates current task progress
             currTask.updateTask();
-            int progress = Math.min((int)((System.currentTimeMillis() - currTask.startTime) / (currTask.endTime - currTask.startTime)*100), 100);
-            progressBar.setProgress(progress);
+            progressBar.setProgress(currTask.getProgress());
+            updateEvents();
+
         }
         //No task in progress
         else {
 
         }
+    }
+
+    public void updateEvents() {
+        //Add all task events to event list
+        if (linearLayoutEvents.getChildCount() > 0)
+            linearLayoutEvents.removeAllViews();
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ArrayList<String> events = currTask.getEvents();
+        for (int i = 0; i < events.size(); i++) {
+            TextView tv = (TextView) layoutInflater.inflate(R.layout.text_view_event_item, null); //inflate TextView
+            tv.setText(events.get(i));
+            linearLayoutEvents.addView(tv); //add to list of events
+        }
+        scrollViewEvents.fullScroll(ScrollView.FOCUS_DOWN); //scroll to bottom
     }
 }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ public class MainActivity extends ActionBarActivity {
     LinearLayout linearLayoutEvents;
     ScrollView scrollViewEvents;
 
+    ProgressBar progressBar;
 
 
     final int UPDATE_FREQUENCY = 2000; //Number of milliseconds between updates
@@ -43,11 +45,11 @@ public class MainActivity extends ActionBarActivity {
         //Get sharedPrefs
         sharedPrefs = getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
         //TODO: Initialize GameData by reading sharedPrefs
-        currTask = new Task(30, this);
+        currTask = new Task(1, this);
 
         linearLayoutEvents = (LinearLayout)findViewById(R.id.LinearLayoutEvents);
         scrollViewEvents = (ScrollView) findViewById(R.id.scrollViewEvents);
-
+        progressBar = (ProgressBar) findViewById(R.id.progressBarTask);
     }
 
 
@@ -100,11 +102,12 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-
         //Currently have a task in progress
         if (currTask != null) {
             //Updates current task progress
             currTask.updateTask();
+            int progress = Math.min((int)((System.currentTimeMillis() - currTask.startTime) / (currTask.endTime - currTask.startTime)*100), 100);
+            progressBar.setProgress(progress);
         }
         //No task in progress
         else {

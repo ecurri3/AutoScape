@@ -18,9 +18,9 @@ public class Task {
     private int expRewardValues[]; //Corresponding exp amount for each skill
 
     private long Duration;//in millis
-    private long timeStarted;//in millis
+    public long startTime;//in millis
     private long lastChecked;//in millis
-    private long endTime;//in millis
+    public long endTime;//in millis
 
     private Context context;
 
@@ -32,9 +32,9 @@ public class Task {
     }
 
     public Task(int minDuration, Context c){
-        this.timeStarted = System.currentTimeMillis();
-        this.lastChecked = timeStarted;
-        this.endTime = timeStarted + minDuration * 60 * 1000;
+        this.startTime = System.currentTimeMillis();
+        this.lastChecked = startTime;
+        this.endTime = startTime + minDuration * 60 * 1000;
         context = c;
 
         sharedpreferences = context.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
@@ -51,7 +51,6 @@ public class Task {
     Updates task progress based on last time you checked
      */
     public void updateTask(){
-        long endTime = sharedpreferences.getLong("endTime_currTask", 1000);
         long currTime = System.currentTimeMillis();
         long rewardTick = rewardTick();
         long nextRewardTime = lastChecked + rewardTick;

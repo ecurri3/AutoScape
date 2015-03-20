@@ -9,7 +9,8 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:background="#343434">
+        android:background="#343434"
+        android:padding="16dp">
 
         <TextView
             android:layout_width="fill_parent"
@@ -17,7 +18,15 @@
             android:text="CURRENT TASK"
             android:gravity="center"
             android:textSize="36sp"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:id="@+id/textCurrentTask"/>
+        <ProgressBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textCurrentTask"
+            android:id="@+id/progressBarTask"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/task_progress_bar"/>
     </RelativeLayout>
 
     <ScrollView

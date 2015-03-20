@@ -7,10 +7,13 @@ public class Player {
 
     private int combatLevel;
     private String username;
-    private String combatStyle;
     private Item[] inventory;
     private Item[] bank;
     private int[] skillEXP;
+
+    private enum combatStyle {
+        MELEE, RANGED, MAGIC
+    }
 
     public static final int STAT_ATTACK = 0;
     public static final int STAT_STRENGTH = 1;
@@ -39,11 +42,12 @@ public class Player {
     public static final int STAT_FARMING = 24;
     public static final int STAT_SUMMONING = 25;
 
-    public Player(){
+    public Player(String username){
+        this.username = username;
 
     }
 
-    public int getLevel(int statID){
+    public int getExp(int statID){
 
         return skillEXP[statID];
     }

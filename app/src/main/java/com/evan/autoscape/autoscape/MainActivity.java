@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -46,7 +47,6 @@ public class MainActivity extends ActionBarActivity {
 
         //Get sharedPrefs
         sharedPrefs = getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
-        //TODO: Initialize GameData by reading sharedPrefs
         currTask = new Task(1, this);
 
         linearLayoutEvents = (LinearLayout)findViewById(R.id.LinearLayoutEvents);
@@ -69,10 +69,20 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        switch (id) {
+            case R.id.action_settings:
             return true;
+            case R.id.equipment:
+                Toast.makeText(this, "Equipment clicked.", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.stats:
+                Toast.makeText(this, "Stats clicked.", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.bank:
+                Toast.makeText(this, "Bank clicked.", Toast.LENGTH_SHORT).show();
+                return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -81,7 +91,11 @@ public class MainActivity extends ActionBarActivity {
     public void onResume(){
         //Called whenever this activity returns to foreground
         super.onResume();
-        //Call update immediately
+
+        //Rebuild objects by reading sharedPrefs
+        rebuildObjects();
+
+        //Resume updating task
         update();
         //Restart runnableUpdate using Handler
         handler.postDelayed(runnableUpdate, UPDATE_FREQUENCY);
@@ -92,6 +106,29 @@ public class MainActivity extends ActionBarActivity {
         super.onPause();
         //Temporarily remove runnableUpdate calls from Handler
         handler.removeCallbacks(runnableUpdate);
+
+        //Write JSON to sharedPrefs
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        String currTaskJSON = currTask.toJSONString();
+        editor.putString("currTask", currTaskJSON);
+        editor.apply();
+        Toast.makeText(this, "Stored JSON", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
+    public void rebuildObjects() {
+        //Read JSON from sharedPrefs
+        String currTaskJSON = sharedPrefs.getString("currTask", "");
+        //Create currTask from retrieved JSON
+        if (!currTaskJSON.equals("")) {
+            currTask = new Task(currTaskJSON);
+            Toast.makeText(this,"Read JSON", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this,"Null String", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void update() {

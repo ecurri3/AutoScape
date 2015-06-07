@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,17 +18,20 @@ import java.util.Random;
  */
 public class Task implements Serializable {
 
-    private int requirements;
-    private int cost;
-    private Item[] itemRewards;
-    private ArrayList<String> arrayListEvents = new ArrayList<String>();
+    public String name;
+    public int cost;
+    public Item[] itemRewards;
+    public ArrayList<String> arrayListEvents = new ArrayList<String>();
 
-    private int expRewardSkills[] = {}; //Skills for which exp is earned
-    private int expRewardValues[] = {}; //Corresponding exp amount for each skill
+    public int expRewardSkills[]; //Skills for which exp is earned
+    public int expRewardValues[]; //Corresponding exp amount for each skill
+    public long tickDur = 0;
 
-    private long Duration;//in millis
+    public Item dropTable[] = {};
+
+    public long duration;//in millis
     public long startTime;//in millis
-    private long lastChecked;//in millis
+    public long lastChecked;//in millis
     public long endTime;//in millis
 
     public boolean isDone = false; //Is task done?
@@ -35,6 +40,7 @@ public class Task implements Serializable {
 
     public static final String MY_PREFS = "MyPrefs";
     SharedPreferences sharedpreferences;
+    Player player;
 
     public Task(){
 
@@ -43,7 +49,7 @@ public class Task implements Serializable {
     public Task(int minDuration, Context c){
         this.startTime = System.currentTimeMillis();
         this.lastChecked = startTime;
-        this.endTime = startTime + minDuration * 60 * 1000;
+        this.endTime = startTime + minDuration;
         context = c;
 
         sharedpreferences = context.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
@@ -54,14 +60,47 @@ public class Task implements Serializable {
         //example exp rewards for combat task: Str and Prayer
         expRewardSkills = new int[] {Player.STAT_ATTACK, Player.STAT_PRAYER};
         expRewardValues = new int[] {200, 300};
+        duration = minDuration;
+    }
+
+    public Task(long minDuration, String name, long tickDur, Item[] dropTable, int[] xpRS, int[] xpRV, Context c){
+        this.startTime = System.currentTimeMillis();
+        this.lastChecked = startTime;
+        this.endTime = startTime + minDuration;
+        context = c;
+
+        sharedpreferences = context.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putLong("endTime_currTask", endTime);
+        editor.apply();
+
+        //example exp rewards for combat task: Str and Prayer
+        expRewardSkills = xpRS;
+        expRewardValues = xpRV;
+        this.dropTable = dropTable;
+
+        this.duration = minDuration;
+        this.tickDur = tickDur;
+        this.name = name;
     }
 
     public Task(String JSON) {
         try {
             JSONObject JSONObj = new JSONObject(JSON);
+
+            Gson gson = new Gson();
+
             this.startTime = JSONObj.getLong("startTime");
             this.endTime = JSONObj.getLong("endTime");
             this.lastChecked = JSONObj.getLong("lastChecked");
+            this.name = JSONObj.getString("taskName");
+            this.tickDur = JSONObj.getLong("tickDur");
+            this.duration = JSONObj.getLong("duration");
+
+            this.expRewardSkills = gson.fromJson(JSONObj.getString("expRewardSkills"), int[].class);
+            this.expRewardValues = gson.fromJson(JSONObj.getString("expRewardValues"), int[].class);
+            this.dropTable = gson.fromJson(JSONObj.getString("dropTable"), Item[].class);
+
             JSONArray JSONListEvents = JSONObj.getJSONArray("arrayListEvents");
             for (int i = 0; i < JSONListEvents.length(); i++) {
                 arrayListEvents.add((String)JSONListEvents.get(i));
@@ -77,7 +116,7 @@ public class Task implements Serializable {
      */
     public void updateTask(){
         long currTime = System.currentTimeMillis();
-        long rewardTick = rewardTick();
+        long rewardTick = tickDur;
         long nextRewardTime = lastChecked + rewardTick;
 
         //Give out as many rewards as the player has earned
@@ -106,15 +145,6 @@ public class Task implements Serializable {
     }
 
     /*
-    Calculates the time for player to receive a reward from the current task
-    Length of time should be a calculation based on task difficulty and player level
-     */
-    public long rewardTick(){
-        return 2000;
-    }
-
-
-    /*
     Gives rewards to the player
     Includes item rewards from drop table and exp rewards
      */
@@ -131,10 +161,10 @@ public class Task implements Serializable {
      */
     public void rewardTable(){
         int roll = getRoll(1,10);
-        if(isBetween(roll, 1, 8))
-            normalDrop();
-        else if(isBetween(roll, 9, 10))
-            rareDrop();
+        if(isBetween(roll, 1, 7))
+            normalDrop(roll);
+        else if(isBetween(roll, 8, 9))
+            rareDrop(roll);
     }
 
     public int getRoll(int min, int max) {
@@ -146,9 +176,15 @@ public class Task implements Serializable {
     Grants EXP to player
      */
     public void giveEXP(){
+        long tick = duration / tickDur;
+        int value;
+        String message;
         //Grant exp in each skill this task involves
         for (int i = 0; i < expRewardSkills.length; i++) {
-
+            value = expRewardValues[i] / (int)tick;
+            MainActivity.player.gainExp(expRewardSkills[i], value);
+            message = "Gained " + value + "EXP";
+            arrayListEvents.add(message);
         }
     }
 
@@ -156,21 +192,26 @@ public class Task implements Serializable {
     Determines if roll was in a certain range
      */
     public boolean isBetween(int roll, int min, int max){
+
         return (roll >= min && roll <= max);
     }
 
     /*
     Grants a normal drop to player
      */
-    public void normalDrop(){
-        arrayListEvents.add("Normal drop.");
+    public void normalDrop(int roll){
+
+        String message = "Normal drop  --  " + dropTable[roll].name;
+        arrayListEvents.add(message);
     }
 
     /*
     Grants a rare drop to player
      */
-    public void rareDrop(){
-        arrayListEvents.add("Rare drop!");
+    public void rareDrop(int roll){
+
+        String message = "Rare Drop!  --  " + dropTable[roll].name;
+        arrayListEvents.add(message);
     }
 
     public ArrayList<String> getEvents() {
@@ -179,10 +220,19 @@ public class Task implements Serializable {
 
     public String toJSONString() {
         JSONObject jsonObject= new JSONObject();
+        Gson gson = new Gson();
         try {
             jsonObject.put("startTime", startTime);
             jsonObject.put("endTime", endTime);
             jsonObject.put("lastChecked", lastChecked);
+            jsonObject.put("taskName", name);
+            jsonObject.put("tickDur", tickDur);
+            jsonObject.put("duration", duration);
+
+            jsonObject.put("expRewardSkills", gson.toJson(expRewardSkills));
+            jsonObject.put("expRewardValues", gson.toJson(expRewardValues));
+            jsonObject.put("dropTable", gson.toJson(dropTable));
+
             JSONArray JSONListEvents = new JSONArray(this.arrayListEvents);
             jsonObject.put("arrayListEvents", JSONListEvents);
         } catch (Exception e) {

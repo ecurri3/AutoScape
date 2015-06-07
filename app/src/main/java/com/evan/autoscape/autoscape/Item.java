@@ -5,12 +5,17 @@ package com.evan.autoscape.autoscape;
  */
 public class Item {
 
-    private int value;
-    private int ID;
-    private String name;
-    private String examine;
+    public int value;
+    public int ID;
+    public String name;
+    public String examine;
+    public int quantity;
 
-    public Item(){
-
+    public Item(int value, int ID, String name, String examine, int quantity){
+        this.value = value;
+        this.ID = ID;
+        this.name = name;
+        this.examine = examine;
+        this.quantity = quantity;
     }
 }

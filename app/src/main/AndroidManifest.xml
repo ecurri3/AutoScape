@@ -19,6 +19,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TaskChoosingActivity"
+            android:screenOrientation="portrait"
+            android:label="AutoScape Task Selection">
+        </activity>
+        <activity
+            android:name=".CombatTaskSelection"
+            android:screenOrientation="portrait"
+            android:label="AutoScape Combat Task Selection">
+        </activity>
+        <activity
+            android:name=".PlayerStatsActivity"
+            android:screenOrientation="portrait"
+            android:label="Player Stat Screen">
+        </activity>
     </application>
 
 </manifest>

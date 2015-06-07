@@ -1,6 +1,7 @@
 package com.evan.autoscape.autoscape;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,6 +38,8 @@ public class MainActivity extends ActionBarActivity {
     final Handler handler = new Handler(); //Handler allows us to call runnableUpdate repeatedly
     SharedPreferences sharedPrefs; //sharedPrefs for storing game data
     Task currTask; //The current task in progress
+    public static Player player;
+
     LinearLayout linearLayoutEvents;
     ScrollView scrollViewEvents;
     ProgressBar progressBar;
@@ -50,6 +53,16 @@ public class MainActivity extends ActionBarActivity {
         //Get sharedPrefs
         sharedPrefs = getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
         //currTask = new Task(1, this);
+
+        //create player every time activity is started
+        //if player exists, read from preferences
+        if (sharedPrefs.contains("player")) {
+            String playerJSON = sharedPrefs.getString("player", "");
+            player = new Player(playerJSON);
+        } else {
+            //else, create a new player
+            player = new Player();
+        }
 
         linearLayoutEvents = (LinearLayout) findViewById(R.id.LinearLayoutEvents);
         scrollViewEvents = (ScrollView) findViewById(R.id.scrollViewEvents);
@@ -79,7 +92,7 @@ public class MainActivity extends ActionBarActivity {
                 Toast.makeText(this, "Equipment clicked.", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.stats:
-                Toast.makeText(this, "Stats clicked.", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, PlayerStatsActivity.class));
                 return true;
             case R.id.bank:
                 Toast.makeText(this, "Bank clicked.", Toast.LENGTH_SHORT).show();
@@ -110,15 +123,20 @@ public class MainActivity extends ActionBarActivity {
         handler.removeCallbacks(runnableUpdate);
 
         //Write JSON to sharedPrefs
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        String playerJSON = player.toJSONString();
+        editor.putString("player", playerJSON);
+        editor.apply();
+
         if (currTask != null) {
-            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor = sharedPrefs.edit();
             String currTaskJSON = currTask.toJSONString();
             editor.putString("currTask", currTaskJSON);
             editor.apply();
             Toast.makeText(this, "Stored JSON", Toast.LENGTH_SHORT).show();
         }
         else {
-            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor = sharedPrefs.edit();
             editor.putString("currTask", "");
             editor.apply();
             Toast.makeText(this, "Stored JSON", Toast.LENGTH_SHORT).show();
@@ -132,7 +150,15 @@ public class MainActivity extends ActionBarActivity {
     public void rebuildObjects() {
         //Read JSON from sharedPrefs
         String currTaskJSON = sharedPrefs.getString("currTask", "");
+        String playerJSON = sharedPrefs.getString("player", "");
         //Create currTask from retrieved JSON
+        //if player exists, read from preferences
+        if (sharedPrefs.contains("player")) {
+            player = new Player(playerJSON);
+        } else {
+            //else, create a new player
+            player = new Player();
+        }
         if (!currTaskJSON.equals("")) {
             currTask = new Task(currTaskJSON);
             Toast.makeText(this, "Read JSON", Toast.LENGTH_SHORT).show();
@@ -212,8 +238,7 @@ Button's onClick is defined based on state of the current Task
                 buttonBottom.setBackgroundColor(Color.parseColor("#343434"));
                 buttonBottom.setOnClickListener(new Button.OnClickListener() {
                     public void onClick(View v) {
-                        currTask = new Task(1, getApplicationContext());
-                        update();
+                        startActivity(new Intent(MainActivity.this, TaskChoosingActivity.class));
                     }
                 });
                 break;

@@ -16,6 +16,8 @@ public class PlayerStatsActivity extends ActionBarActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_stats);
 
+        TextView total = (TextView)findViewById(R.id.totalLevel);
+        TextView combat = (TextView)findViewById(R.id.combatLevel);
 
         TextView attack = (TextView)findViewById(R.id.textView1);
         TextView strength = (TextView)findViewById(R.id.textView2);
@@ -30,8 +32,11 @@ public class PlayerStatsActivity extends ActionBarActivity{
         TextView agility = (TextView)findViewById(R.id.textView9);
 
         TextView herblore = (TextView)findViewById(R.id.textView10);
-        TextView thieving = (TextView)findViewById(R.id.textView11);
+        TextView theiving = (TextView)findViewById(R.id.textView11);
         TextView crafting = (TextView)findViewById(R.id.textView12);
+
+        total.setText("Total Level: " + MainActivity.player.totalLevel);
+        combat.setText("Combat Level: " + MainActivity.player.combatLevel);
 
         attack.setText("Attack EXP: " + MainActivity.player.getExp(Player.STAT_ATTACK) +
                        "\nAttack Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_ATTACK)));
@@ -53,5 +58,12 @@ public class PlayerStatsActivity extends ActionBarActivity{
                 "\nHitpoints Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_HITPOINTS)));
         agility.setText("Agility EXP: " + MainActivity.player.getExp(Player.STAT_AGILITY) +
                 "\nAgility Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_AGILITY)));
+
+        herblore.setText("Herblore EXP: " + MainActivity.player.getExp(Player.STAT_HERBLORE) +
+                "\nHerblore Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_HERBLORE)));
+        theiving.setText("Theiving EXP: " + MainActivity.player.getExp(Player.STAT_THEIVING) +
+                "\nTheiving Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_THEIVING)));
+        crafting.setText("Crafting EXP: " + MainActivity.player.getExp(Player.STAT_CRAFTING) +
+                "\nCrafting Level: " + MainActivity.player.getLevel(MainActivity.player.getExp(Player.STAT_CRAFTING)));
     }
 }

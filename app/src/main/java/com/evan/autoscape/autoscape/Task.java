@@ -160,16 +160,18 @@ public class Task implements Serializable {
     By generating a random number and comparing to drop table ranges
      */
     public void rewardTable(){
-        int roll = getRoll(1,10);
-        if(isBetween(roll, 1, 7))
+        int roll = getRoll(10);
+        if(isBetween(roll, 0, 7))
             normalDrop(roll);
         else if(isBetween(roll, 8, 9))
             rareDrop(roll);
+
+        MainActivity.player.addItem(dropTable[roll]);
     }
 
-    public int getRoll(int min, int max) {
+    public int getRoll(int max) {
         Random rand = new Random();
-        return rand.nextInt((max - min) + 1) + min;
+        return rand.nextInt(max);
     }
 
     /*

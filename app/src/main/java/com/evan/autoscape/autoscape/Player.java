@@ -12,9 +12,10 @@ import org.json.JSONObject;
 public class Player {
 
     public int combatLevel;
+    public int totalLevel;
     public String username;
-    public Item[] inventory;
-    public Item[] bank;
+    public Item inventory[];
+    public Item bank[];
     public int skillEXP[];
     private int inventorySize = 28;
     private int bankSize = 1024;
@@ -25,6 +26,9 @@ public class Player {
 
     private combatStyle currentCombatStyle;
 
+    /*
+    static ints that refer to index of each stat
+     */
     public static final int STAT_ATTACK = 0;
     public static final int STAT_STRENGTH = 1;
     public static final int STAT_DEFENCE = 2;
@@ -52,18 +56,27 @@ public class Player {
     public static final int STAT_FARMING = 24;
     public static final int STAT_SUMMONING = 25;
 
+    /*
+    Class constructor that is called only when app is run for first time
+     */
     public Player(){
-        combatLevel = 0;
+        combatLevel = 3;
+        totalLevel = 26;
         username = "Player";
-        skillEXP = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-        Log.i("skillEXP", "" + skillEXP[0]);
+        skillEXP = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        inventory = new Item[inventorySize];
+        bank = new Item[bankSize];
     }
 
+    /*
+    JSON constructor
+     */
     public Player(String JSON){
         try {
             JSONObject JSONObj = new JSONObject(JSON);
             Gson gson = new Gson();
             this.combatLevel = JSONObj.getInt("combatLevel");
+            this.totalLevel = JSONObj.getInt("totalLevel");
             this.inventory = gson.fromJson(JSONObj.getString("inventory"), Item[].class);
             this.bank = gson.fromJson(JSONObj.getString("bank"), Item[].class);
             this.skillEXP = gson.fromJson(JSONObj.getString("skillEXP"), int[].class);
@@ -74,23 +87,35 @@ public class Player {
         }
     }
 
+    /*
+    returns exp for given index
+     */
     public int getExp(int statID){
 
         return skillEXP[statID];
     }
 
+    /*
+    returns level for a given exp value
+
+    difference between levels grows by roughly 10.4% each level up
+     */
     public int getLevel (int exp){
 
+        // new int array is created
+        // NOTE: May be wise to add skillLVL array to Player that is saved in JSON to
+        //       reduce processing
         int skills[] = new int[99];
         skills[0] = 0;
-        skills[1] = 83;
+        skills[1] = 83; // index is initially set to be used for further calculations
         int diff = 83;
 
         for(int i=2; i<99 ; i++){
-            diff = (int)(diff * 1.10409);
+            diff = (int)(diff * 1.10409); // update the difference between levels
             skills[i] = skills[i-1] + diff;
         }
 
+        // finds index at which the exp is higher than the exp param and returns index(your level)
         for(int i=0; i<99; i++){
             if(skills[i] > exp){
                 return i;
@@ -108,23 +133,38 @@ public class Player {
     public void gainExp(int skill, int value) {
         skillEXP[skill] += value;
         updateCombatLevel();
+        updateTotalLevel();
     }
 
     /**
      * Combat level = (1/4)*(Attack + Strength + Defence + Hitpoints) + (1/7)*(Prayer)
      */
     private void updateCombatLevel(){
-        combatLevel = (skillEXP[STAT_ATTACK] + skillEXP[STAT_STRENGTH] + skillEXP[STAT_DEFENCE]
-                + skillEXP[STAT_HITPOINTS])/4;
-        combatLevel += (skillEXP[STAT_PRAYER])/7;
+        combatLevel = (getLevel(skillEXP[STAT_ATTACK]) + getLevel(skillEXP[STAT_STRENGTH]) + getLevel(skillEXP[STAT_DEFENCE])
+                + getLevel(skillEXP[STAT_HITPOINTS]))/4;
+        combatLevel += (getLevel(skillEXP[STAT_PRAYER]))/7;
     }
 
+    /*
+    Total level = all levels added together, duh
+     */
+    private void updateTotalLevel(){
+        totalLevel = 0;
+        for(int i=0; i<26; i++){
+            totalLevel += getLevel(skillEXP[i]);
+        }
+    }
+
+    /*
+    Write player data to JSON String
+     */
     public String toJSONString(){
 
         JSONObject jsonObject= new JSONObject();
         Gson gson = new Gson();
         try{
             jsonObject.put("combatLevel", combatLevel);
+            jsonObject.put("totalLevel", totalLevel);
             jsonObject.put("playerName", username);
             jsonObject.put("inventory", gson.toJson(inventory));
             jsonObject.put("bank", gson.toJson(bank));
@@ -135,11 +175,33 @@ public class Player {
         return jsonObject.toString();
     }
 
+    /*
+    Used for debugging,
+    prints all item information to Log.d
+     */
+    public void getItem(int index){
+        Log.d("Item name", "" + inventory[index].name);
+        Log.d("Item examine", "" + inventory[index].examine);
+        Log.d("Item quantity", "" + inventory[index].quantity);
+        Log.d("Item value", "" + inventory[index].value);
+    }
+
+    /*
+    Adds item to either inventory or bank when reward is given
+
+    Inventory is first checked for the same Item
+        if item is found, add quantities together
+        if item is not found, find first null index and add item
+
+    Bank is checked second and follows same algorithm as inventory
+     */
     public void addItem(Item item){
         for(int i=0; i<inventorySize; i++){
-            if(inventory[i].ID == item.ID){
-                inventory[i].quantity += item.quantity;
-                return;
+            if(inventory[i] != null) {
+                if (inventory[i].ID == item.ID) {
+                    inventory[i].quantity += item.quantity;
+                    return;
+                }
             }
         }
         for(int i=0;i<inventorySize; i++){
@@ -149,9 +211,11 @@ public class Player {
             }
         }
         for(int i=0; i<bankSize; i++){
-            if(bank[i].ID == item.ID){
-                bank[i].quantity += item.quantity;
-                return;
+            if(bank[i] != null) {
+                if (bank[i].ID == item.ID) {
+                    bank[i].quantity += item.quantity;
+                    return;
+                }
             }
         }
         for(int i=0;i<bankSize; i++){

@@ -94,6 +94,9 @@ public class MainActivity extends ActionBarActivity {
             case R.id.stats:
                 startActivity(new Intent(MainActivity.this, PlayerStatsActivity.class));
                 return true;
+            case R.id.inventory:
+                startActivity(new Intent(MainActivity.this, InventoryActivity.class));
+                return true;
             case R.id.bank:
                 Toast.makeText(this, "Bank clicked.", Toast.LENGTH_SHORT).show();
                 return true;

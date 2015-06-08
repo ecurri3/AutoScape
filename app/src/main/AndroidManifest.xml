@@ -34,6 +34,11 @@
             android:screenOrientation="portrait"
             android:label="Player Stat Screen">
         </activity>
+        <activity
+            android:name=".InventoryActivity"
+            android:screenOrientation="portrait"
+            android:label="Inventory Screen">
+        </activity>
     </application>
 
 </manifest>

@@ -2,16 +2,128 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:padding="6dp"
-    android:weightSum="2">
+    android:layout_height="match_parent">
+
+    <ViewAnimator
+        android:id="@+id/viewAnimator"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/rs_background">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingTop="6dp">
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="44dp"
+                android:layout_marginRight="44dp"
+                android:text="GOBLINS"
+                android:id="@+id/goblinTask"/>
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="44dp"
+                android:layout_marginRight="44dp"
+                android:text="SKELETONS"
+                android:id="@+id/skeletonTask" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/parchment_background1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/taskName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="48dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"/>
+
+            <TextView
+                android:id="@+id/taskSkills"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="32dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"/>
+
+            <TextView
+                android:id="@+id/taskValues"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="24dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"/>
+
+            <TextView
+                android:id="@+id/rareDrops"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="24dp"
+                android:layout_gravity="center_horizontal"
+                android:padding="12dp"/>
+
+            <NumberPicker
+                android:id="@+id/numberpicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#ffffff">
+
+            </NumberPicker>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:weightSum="2">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="GOBLINS"
-            android:id="@+id/goblinTask"
-            android:layout_weight="1" />
+            android:id="@+id/declineTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="BACK"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/confirmTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="CONFIRM"
+            android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </ViewAnimator>
+
+
 
 </LinearLayout>
